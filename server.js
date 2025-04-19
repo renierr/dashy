@@ -23,7 +23,7 @@ const basicAuth = require('express-basic-auth');
 const history = require('connect-history-api-fallback');
 
 /* Kick of some basic checks */
-require('./services/update-checker'); // Checks if there are any updates available, prints message
+//require('./services/update-checker'); // Checks if there are any updates available, prints message
 
 let config = {}; // setup the config
 config = require('./services/config-validator'); // Include and kicks off the config file validation script
@@ -54,11 +54,6 @@ const host = process.env.HOST || '0.0.0.0';
 process.env.IS_SERVER = 'True';
 
 /* Attempts to get the users local IP, used as part of welcome message */
-/*
-const getLocalIp = () => {
-  const dnsLookup = util.promisify(dns.lookup);
-  return dnsLookup(os.hostname());
-};*/
 const getLocalIp = async () => {
   const dnsLookup = util.promisify(dns.lookup);
   const { address, family } = await dnsLookup(os.hostname());

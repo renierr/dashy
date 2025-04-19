@@ -54,9 +54,15 @@ const host = process.env.HOST || '0.0.0.0';
 process.env.IS_SERVER = 'True';
 
 /* Attempts to get the users local IP, used as part of welcome message */
+/*
 const getLocalIp = () => {
   const dnsLookup = util.promisify(dns.lookup);
   return dnsLookup(os.hostname());
+};*/
+const getLocalIp = async () => {
+  const dnsLookup = util.promisify(dns.lookup);
+  const { address, family } = await dnsLookup(os.hostname());
+  return family === 4 ? address : '127.0.0.1'; // Fallback auf localhost, falls keine IPv4-Adresse gefunden wird
 };
 
 /* Gets the users local IP and port, then calls to print welcome message */

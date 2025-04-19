@@ -5,7 +5,7 @@
  * Dashy: Licensed under MIT - (C) Alicia Sykes 2024
  */
 
-const LONG_PRESS_DEFAULT_DELAY = 750;
+const LONG_PRESS_DEFAULT_DELAY = 1000;
 const longPressEvent = new CustomEvent('long-press');
 
 const MOVEMENT_THRESHOLD = 10; // threshold in pixel for movement
@@ -37,9 +37,15 @@ export default {
       el.dataset.elapsed = true;
     };
 
+    const onScroll = () => {
+      clearTimeout(parseInt(el.dataset.longPressTimeout, 10));
+      document.removeEventListener('scroll', onScroll, true);
+    };
+
     const onPointerUp = () => {
       clearTimeout(parseInt(el.dataset.longPressTimeout, 10));
       document.removeEventListener('pointerup', onPointerUp);
+      document.removeEventListener('scroll', onScroll, true);
     };
 
     const onPointerMove = (e) => {
@@ -57,6 +63,7 @@ export default {
       if (e.button === 2) return;
       startTime = Date.now();
       document.addEventListener('pointerup', onPointerUp);
+      document.addEventListener('scroll', onScroll, true);
       startX = e.clientX;
       startY = e.clientY;
       el.addEventListener('pointermove', onPointerMove);

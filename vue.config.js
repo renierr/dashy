@@ -89,13 +89,7 @@ const pages = {
 // Export the main Vue app config
 module.exports = {
   publicPath,
-  pwa: {
-    workboxPluginMode: 'InjectManifest',
-    workboxOptions: {
-      swSrc: './public/service-worker.js',
-      exclude: [/\.*/],
-    },
-  },
+  pwa,
   integrity,
   configureWebpack,
   pages,

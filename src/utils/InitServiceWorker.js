@@ -1,6 +1,5 @@
 import axios from 'axios';
 import yaml from 'js-yaml';
-import { register } from 'register-service-worker';
 import { sessionStorageKeys } from '@/utils/defaults';
 import { statusMsg, statusErrorMsg } from '@/utils/CoolConsole';
 
@@ -50,44 +49,31 @@ const printSwStatus = (msg) => {
   statusMsg('Service Worker Status', msg);
 };
 
-const swUrl = `${process.env.BASE_URL || '/'}service-worker.js`;
+// const swUrl = `${process.env.BASE_URL || '/'}service-worker.js`;
 
-/* If service worker enabled, then register it, and print message when status changes */
 const registerServiceWorker = async () => {
-  if (await shouldEnableServiceWorker()) {
-    register(swUrl, {
-      ready() {
-        setSwStatus({ ready: true });
-        printSwStatus(
-          'Dashy is being served from cache by a service worker.\n'
-          + 'For more details, visit https://goo.gl/AFskqB',
-        );
-      },
-      registered() {
-        setSwStatus({ registered: true });
-        printSwStatus('Service worker has been registered.');
-      },
-      cached() {
-        setSwStatus({ cached: true });
-        printSwStatus('App has been cached for offline use.');
-      },
-      updatefound() {
-        setSwStatus({ updateFound: true });
-        printSwStatus('New content is downloading...');
-      },
-      updated() {
-        setSwStatus({ updated: true });
-        printSwStatus('New content is available; please refresh the page.');
-      },
-      offline() {
-        setSwStatus({ offline: true });
-        printSwStatus('No internet connection found. Dashy is running in offline mode.');
-      },
-      error(error) {
-        setSwStatus({ error: true });
-        statusErrorMsg('Service Worker Status', 'Error during SW registration', error);
-      },
-    });
+  if ('serviceWorker' in navigator && await shouldEnableServiceWorker()) {
+    try {
+      const registration = await navigator.serviceWorker.register('/service-worker.js');
+      printSwStatus('Service Worker registered with scope:', registration.scope);
+
+      registration.onupdatefound = () => {
+        const installingWorker = registration.installing;
+        installingWorker.onstatechange = () => {
+          if (installingWorker.state === 'installed') {
+            if (navigator.serviceWorker.controller) {
+              printSwStatus('New content is available; please refresh.');
+            } else {
+              printSwStatus('Content is cached for offline use.');
+            }
+          }
+        };
+      };
+    } catch (error) {
+      printSwStatus(`Service Worker registration failed: ${error}`);
+    }
+  } else {
+    printSwStatus('Service Workers are not supported in this browser or disabled by user.');
   }
 };
 

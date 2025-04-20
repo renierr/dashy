@@ -89,15 +89,19 @@ const pages = {
 // Export the main Vue app config
 module.exports = {
   publicPath,
-  pwa,
+  pwa: {
+    workboxPluginMode: 'InjectManifest',
+    workboxOptions: {
+      swSrc: './public/service-worker.js',
+      exclude: [/\.*/],
+    },
+  },
   integrity,
   configureWebpack,
   pages,
   devServer,
   chainWebpack: config => {
     config.module.rules.delete('svg');
-    config.cache({
-      type: 'filesystem',
-    });
+    config.cache(false);
   },
 };

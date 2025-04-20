@@ -104,4 +104,6 @@ module.exports = {
     config.module.rules.delete('svg');
     config.cache(false);
   },
+  productionSourceMap: false,
+  parallel: true,
 };

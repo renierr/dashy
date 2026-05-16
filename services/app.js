@@ -18,9 +18,6 @@ const yaml = require('js-yaml');
 const express = require('express');
 const basicAuth = require('express-basic-auth');
 
-/* Kick of some basic checks */
-require('./update-checker'); // Checks if there are any updates available, prints message
-
 let config = require('./config-validator'); // Validate config file and load result
 
 /* Include route handlers for API endpoints */
